@@ -1,2 +1,2 @@
 # .github
-Pre-packaged F5 Distributed Cloud sales demos and supporting collateral
+Org repo for (f5xc-SalesDemos)[https://github.com/f5xc-SalesDemos].
