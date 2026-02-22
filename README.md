@@ -1,2 +1,2 @@
 # .github
-Org repo for [f5xc-SalesDemos](https://github.com/f5xc-SalesDemos).
+Org repo for [f5xc-salesdemos](https://f5xc-salesdemos.github.io/docs/).
