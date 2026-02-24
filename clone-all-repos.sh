@@ -45,7 +45,7 @@ for full_name in "${repos[@]}"; do
     if [ -d "$dir" ]; then
         echo "  Directory exists, pulling latest..."
         if git -C "$dir" pull --ff-only 2>&1 | sed 's/^/  /'; then
-            ((refreshed++))
+            (( refreshed++ )) || true
         else
             echo "  Warning: git pull failed for $dir"
             errors+=("$full_name (pull failed)")
@@ -53,7 +53,7 @@ for full_name in "${repos[@]}"; do
     else
         echo "  Cloning..."
         if git clone "https://github.com/${full_name}.git" 2>&1 | sed 's/^/  /'; then
-            ((cloned++))
+            (( cloned++ )) || true
         else
             echo "  Warning: git clone failed for $full_name"
             errors+=("$full_name (clone failed)")
