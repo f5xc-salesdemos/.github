@@ -43,12 +43,67 @@ for full_name in "${repos[@]}"; do
     echo "--- $full_name ---"
 
     if [ -d "$dir" ]; then
-        echo "  Directory exists, pulling latest..."
-        if git -C "$dir" pull --ff-only 2>&1 | sed 's/^/  /'; then
+        echo "  Directory exists, refreshing..."
+
+        # Refresh remote-tracking refs and prune branches deleted upstream.
+        if ! git -C "$dir" fetch --prune origin 2>&1 | sed 's/^/  /'; then
+            echo "  Warning: git fetch failed for $dir"
+            errors+=("$full_name (fetch failed)")
+            echo
+            continue
+        fi
+
+        # Resolve the repo's default branch (origin/HEAD), repairing it if missing.
+        default=$(git -C "$dir" symbolic-ref --quiet refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+        if [ -z "$default" ]; then
+            git -C "$dir" remote set-head origin --auto >/dev/null 2>&1 || true
+            default=$(git -C "$dir" symbolic-ref --quiet refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+        fi
+        default=${default:-main}
+
+        current=$(git -C "$dir" rev-parse --abbrev-ref HEAD)
+
+        if [ "$current" != "$default" ]; then
+            if git -C "$dir" show-ref --verify --quiet "refs/remotes/origin/$current"; then
+                # Feature branch still exists upstream: fast-forward it in place.
+                if git -C "$dir" merge --ff-only "origin/$current" 2>&1 | sed 's/^/  /'; then
+                    echo "  On feature branch '$current' (still on remote) — left checked out."
+                    (( refreshed++ )) || true
+                else
+                    echo "  Warning: fast-forward failed for $dir on '$current'"
+                    errors+=("$full_name (ff failed on '$current')")
+                fi
+                echo
+                continue
+            fi
+
+            # Feature branch was merged/deleted upstream. Only switch back to the
+            # default branch when nothing local would be lost.
+            dirty=$(git -C "$dir" status --porcelain)
+            local_only=$(git -C "$dir" log --oneline "$current" --not --remotes 2>/dev/null)
+            if [ -n "$dirty" ] || [ -n "$local_only" ]; then
+                echo "  Skipping switch: '$current' has uncommitted changes or unpushed commits — left untouched."
+                errors+=("$full_name (on '$current' with local work)")
+                echo
+                continue
+            fi
+
+            echo "  Branch '$current' gone upstream — switching to '$default' and removing stale branch."
+            if ! git -C "$dir" checkout "$default" 2>&1 | sed 's/^/  /'; then
+                echo "  Warning: failed to checkout $default for $dir"
+                errors+=("$full_name (checkout failed)")
+                echo
+                continue
+            fi
+            git -C "$dir" branch -D "$current" 2>&1 | sed 's/^/  /' || true
+        fi
+
+        # Fast-forward the default branch to origin.
+        if git -C "$dir" merge --ff-only "origin/$default" 2>&1 | sed 's/^/  /'; then
             (( refreshed++ )) || true
         else
-            echo "  Warning: git pull failed for $dir"
-            errors+=("$full_name (pull failed)")
+            echo "  Warning: fast-forward failed for $dir on '$default' (diverged from origin)"
+            errors+=("$full_name (ff failed)")
         fi
     else
         echo "  Cloning..."
