@@ -1,7 +1,7 @@
 #!/bin/bash
-# Launch the f5xc-salesdemos team lead and auto-send the team creation prompt
+# Launch the f5-sales-demo team lead and auto-send the team creation prompt
 
-SESSION="f5xc-salesdemoss"
+SESSION="f5-sales-demos"
 VAULTS_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Kill existing session if present

@@ -1,7 +1,7 @@
 # `clone-all-repos.sh` — design & reference
 
 One script to clone, and keep fresh, a local copy of every repo in the
-`f5xc-salesdemos` ecosystem.
+`f5-sales-demo` ecosystem.
 
 ## Purpose
 
@@ -82,4 +82,4 @@ a live feature branch). Run it directly:
 shellcheck clone-all-repos.sh clone-all-repos.test.sh
 ```
 
-[manifest]: https://raw.githubusercontent.com/f5xc-salesdemos/docs-control/refs/heads/main/.github/config/downstream-repos.json
+[manifest]: https://raw.githubusercontent.com/f5-sales-demo/docs-control/refs/heads/main/.github/config/downstream-repos.json

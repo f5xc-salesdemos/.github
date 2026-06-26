@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Clone (or refresh) all downstream repos from the f5xc-salesdemos organization.
+# Clone (or refresh) all downstream repos from the f5-sales-demo organization.
 # Reads the repo list from the docs-control manifest and includes docs-control and .github.
 #
 # Running this once gives a developer a local clone of the whole ecosystem; re-running
@@ -17,8 +17,8 @@
 
 set -euo pipefail
 
-MANIFEST_URL="https://raw.githubusercontent.com/f5xc-salesdemos/docs-control/refs/heads/main/.github/config/downstream-repos.json"
-ORG="f5xc-salesdemos"
+MANIFEST_URL="https://raw.githubusercontent.com/f5-sales-demo/docs-control/refs/heads/main/.github/config/downstream-repos.json"
+ORG="f5-sales-demo"
 
 # Outcome of the most recent refresh_repo/clone_repo call (read by the caller).
 REPO_STATUS=""   # cloned | refreshed | healed | attention | error
