@@ -1,4 +1,4 @@
-# f5xc-salesdemos Root — Team Lead Instructions
+# f5-sales-demo Root — Team Lead Instructions
 
 ## RULES (MANDATORY)
 
